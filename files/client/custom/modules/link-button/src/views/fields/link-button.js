@@ -52,8 +52,16 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             }
 
             if (url && isDetailMode && hideOriginalWorkflowAction === true && mode === 'runEspoWorkflow') {
-                const workflowId = url.split('#')[1]?.split('/').pop();
-                superParent.hideHeaderActionItem(`runWorkflow_${workflowId}`);
+                let hashPart;
+                if (url.startsWith('#')) {
+                    hashPart = url.substring(1);
+                } else {
+                    hashPart = url.split('#')[1];
+                }
+                const workflowId = hashPart?.split('/').pop();
+                if (workflowId) {
+                    superParent.hideHeaderActionItem(`runWorkflow_${workflowId}`);
+                }
             }
 
         }
@@ -94,9 +102,17 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
         actionEspoModal() {
             let model = this.model;
             let url = this.model.get(this.name);
-            let hashPart = url.split('#')[1];
+
+            // Handle URLs that start with # (e.g., #Contact/view/123)
+            let hashPart;
+            if (url.startsWith('#')) {
+                hashPart = url.substring(1);
+            } else {
+                hashPart = url.split('#')[1];
+            }
+
             if (!hashPart) {
-                return Espo.Ui.error('Error: this is not a valid CRM URL');
+                return Espo.Ui.error('Error: this is not a valid URL');
             }
 
             let parts = hashPart.split('/');
@@ -130,9 +146,17 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
         actionQuickCreate() {
             let model = this.model;
             let url = this.model.get(this.name);
-            let hashPart = url.split('#')[1];
+
+            // Handle URLs that start with # (e.g., #Notes)
+            let hashPart;
+            if (url.startsWith('#')) {
+                hashPart = url.substring(1);
+            } else {
+                hashPart = url.split('#')[1];
+            }
+
             if (!hashPart) {
-                return Espo.Ui.error('Error: this is not a valid CRM URL');
+                return Espo.Ui.error('Error: this is not a valid URL');
             }
 
             let parts = hashPart.split('/');
@@ -221,7 +245,15 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
         actionEspoWorkFlow() {
             let model = this.model;
             let url = model.get(this.name);
-            let hashPart = url.split('#')[1];
+
+            // Handle URLs that start with # (e.g., #Workflow/view/123)
+            let hashPart;
+            if (url.startsWith('#')) {
+                hashPart = url.substring(1);
+            } else {
+                hashPart = url.split('#')[1];
+            }
+
             if (!hashPart) {
                 return Espo.Ui.error('Error: this is not a valid workflow URL');
             }

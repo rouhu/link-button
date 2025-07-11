@@ -7,6 +7,8 @@ This update adds the ability to specify a custom relationship name when using th
 - Fixed button display issues where buttons were showing as text fields
 - Ensured proper template loading for all view modes (detail, list, edit)
 - Added default values for style and buttonSize to prevent empty button rendering
+- Removed URL validation requirement for Quick Create, EspoModal, and Workflow modes
+- Now accepts URLs starting with `#` (e.g., `#Notes`, `#Contact/view/123`)
 
 ## Changes Made
 
