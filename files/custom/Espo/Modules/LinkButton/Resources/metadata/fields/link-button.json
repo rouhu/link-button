@@ -54,6 +54,12 @@
             "view": "link-button:views/admin/field-manager/fields/confirmation-text"
         },
         {
+            "name": "relationshipName",
+            "type": "varchar",
+            "tooltip": true,
+            "view": "link-button:views/admin/field-manager/fields/relationship-name"
+        },
+        {
             "name": "popupHeight",
             "type": "int",
             "default": 800,

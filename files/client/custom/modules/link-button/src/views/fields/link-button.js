@@ -12,7 +12,7 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             this.events['click button[data-action="open-modal"]'] = () => {
                 this.actionOpenModal();
             };
-            
+
             this.events['click button[data-action="espo-modal"]'] = () => {
                 this.actionEspoModal();
             };
@@ -24,7 +24,7 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             this.events['click button[data-action="quick-create"]'] = () => {
                 this.actionQuickCreate();
             };
-            
+
             this.events['click button[data-action="run-workflow"]'] = () => {
                 this.actionCheckWorkFlow();
             };
@@ -39,11 +39,11 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             const isDetailMode = this.isDetailMode();
             const hideOriginalWorkflowAction = this.model.getFieldParam(this.name, 'hideOriginalWorkflowAction');
             const mode = this.model.getFieldParam(this.name, 'mode');
-        
+
             if (hideLabel === true) {
                 this.getLabelElement().hide();
             }
-        
+
             if (url && isDetailMode && hideOriginalWorkflowAction === true && mode === 'runEspoWorkflow') {
                 const workflowId = url.split('#')[1]?.split('/').pop();
                 superParent.hideHeaderActionItem(`runWorkflow_${workflowId}`);
@@ -88,18 +88,18 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             if (!hashPart) {
                 return Espo.Ui.error('Error: this is not a valid CRM URL');
             }
-        
+
             let parts = hashPart.split('/');
             let entityType = parts[0];
             if (!entityType) {
                 return Espo.Ui.error('Error: no entity type found');
             }
-        
+
             let recordId = parts[parts.length - 1];
             if (!recordId) {
                 return Espo.Ui.error('Error: no record ID found');
             }
-        
+
             this.notify('Loading...');
             this.createView('quickView', 'link-button:views/modals/espo-modal', {
                 scope: entityType,
@@ -124,7 +124,7 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             if (!hashPart) {
                 return Espo.Ui.error('Error: this is not a valid CRM URL');
             }
-        
+
             let parts = hashPart.split('/');
             let entityTypeModal = parts[0];
             if (!entityTypeModal) {
@@ -137,12 +137,25 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             } else {
                 viewName = this.getMetadata().get('clientDefs.' + entityTypeModal + '.modalViews.edit') || 'views/modals/edit';
             }
-            
+
             let attributes = {
                 parentId: model.id,
                 parentType: model.entityType,
                 parentName: model.get('name'),
             };
+
+            // Add relationship link if relationship name is specified
+            let relationshipName = this.model.getFieldParam(this.name, 'relationshipName');
+            if (relationshipName) {
+                // Use the specified relationship name
+                attributes[relationshipName + 'Id'] = model.id;
+                attributes[relationshipName + 'Name'] = model.get('name');
+            } else {
+                // Fallback to entity type based relationship (backward compatibility)
+                let entity = model.entityType;
+                attributes[entity.toLowerCase() + 'Id'] = model.id;
+                attributes[entity.toLowerCase() + 'Name'] = model.get('name');
+            }
 
             if (
                 entityTypeModal === 'Email' &&
@@ -186,14 +199,14 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             }
 
             Espo.Ui.confirm(message, {
-                    confirmText: this.translate('Yes', 'labels'),
-                    cancelText: this.translate('No', 'labels'),
-                    backdrop: true,
-                    isHtml: true,
-                })
+                confirmText: this.translate('Yes', 'labels'),
+                cancelText: this.translate('No', 'labels'),
+                backdrop: true,
+                isHtml: true,
+            })
                 .then(() => this.actionEspoWorkFlow());
         }
-        
+
 
         actionEspoWorkFlow() {
             let model = this.model;
@@ -211,13 +224,13 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             if (entityType !== 'Workflow') {
                 return Espo.Ui.error(('Error: not a workflow'));
             }
-        
+
             Espo.Ajax.getRequest('LinkButton/WorkflowCheck/' + workflowId)
                 .then(response => {
                     if (response.isManual === false) {
                         return Espo.Ui.error(('Error: not a manual or active workflow'));
                     }
-        
+
                     Espo.Ajax.postRequest('WorkflowManual/action/run', {
                         targetId: model.id,
                         id: workflowId,
@@ -232,7 +245,7 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
                     Espo.Ui.error(('Error checking workflow type'));
                 });
         }
-        
+
         actionOpenPopup() {
             const popupHeight = this.model.getFieldParam(this.name, 'popupHeight') || 800;
             const popupWidth = this.model.getFieldParam(this.name, 'popupWidth') || 600;
