@@ -1,4 +1,4 @@
-define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
+define('link-button:views/fields/link-button', ['views/fields/varchar'], (Dep) => {
     return class extends Dep {
 
         type = 'link-button'
