@@ -38,6 +38,22 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
 
         }
 
+        validateUrl() {
+            // Get the current mode
+            const mode = this.model.getFieldParam(this.name, 'mode');
+            const value = this.model.get(this.name);
+
+            // For quickCreate, openEspoModal, and runEspoWorkflow modes, allow URLs starting with #
+            if (['quickCreate', 'openEspoModal', 'runEspoWorkflow'].includes(mode)) {
+                if (value && value.startsWith('#')) {
+                    return true; // Valid
+                }
+            }
+
+            // For other modes or URLs not starting with #, use parent validation
+            return super.validateUrl();
+        }
+
         afterRender() {
             super.afterRender();
             const superParent = this.getParentView().getParentView()._parentView;
