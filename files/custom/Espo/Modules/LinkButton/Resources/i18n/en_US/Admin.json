@@ -1,51 +1,25 @@
 {
-    "fieldTypes": {
-        "link-button": "Link Button"
+    "labels": {
+        "Link Button": "Link Button"
     },
     "fields": {
-        "iconLeft": "Left Icon",
-        "iconRight": "Right Icon",
-        "mode": "Mode",
         "buttonLabel": "Button Label",
-        "placeholder": "Placeholder Value",
-        "hideLabel": "Hide Label", 
-        "buttonSize": "Button Size",
-        "style": "Style",
+        "placeholder": "Placeholder",
         "title": "Title",
+        "hideLabel": "Hide Label",
+        "mode": "Mode",
+        "hideOriginalWorkflowAction": "Hide Original Workflow Action",
         "confirmationDialog": "Confirmation Dialog",
         "confirmationText": "Confirmation Text",
-        "hideOriginalWorkflowAction": "Hide Original Workflow Action",
+        "relationshipName": "Relationship Name",
         "popupHeight": "Popup Height",
-        "popupWidth": "Popup Width"
+        "popupWidth": "Popup Width",
+        "style": "Style",
+        "buttonSize": "Button Size",
+        "iconLeft": "Icon Left",
+        "iconRight": "Icon Right"
     },
     "options": {
-        "style": {
-            "default": "default",
-            "primary": "Primary",
-            "secondary": "Secondary",
-            "success": "Success",
-            "danger": "Danger",
-            "warning": "Warning",
-            "info": "info",
-            "dark": "Dark",
-            "light": "Light",
-            "outline-primary": "Outline Primary",
-            "outline-secondary": "Outline Secondary",
-            "outline-success": "Outline Success",
-            "outline-danger": "Outline Danger",
-            "outline-warning": "Outline Warning",
-            "outline-info": "Outline info",
-            "outline-dark": "Outline Dark",
-            "outline-light": "Outline Light"
-        },
-        "buttonSize": {
-            "btn-sm": "Small",
-            "btn-md": "Medium",
-            "btn-lg": "Large",
-            "btn-sm btn-block": "Block Small",
-            "btn-md btn-block": "Block Medium",
-            "btn-lg btn-block": "Block Large"
-        },
         "mode": {
             "openNewTab": "Open New Tab",
             "openUrl": "Open URL",
@@ -53,7 +27,34 @@
             "openModal": "Open Modal",
             "openEspoModal": "Open Espo Modal",
             "quickCreate": "Quick Create",
-            "runEspoWorkflow": "Run Workflow"
+            "runEspoWorkflow": "Run Espo Workflow"
+        },
+        "style": {
+            "default": "Default",
+            "primary": "Primary",
+            "secondary": "Secondary",
+            "success": "Success",
+            "danger": "Danger",
+            "warning": "Warning",
+            "info": "Info",
+            "dark": "Dark",
+            "light": "Light",
+            "outline-primary": "Outline Primary",
+            "outline-secondary": "Outline Secondary",
+            "outline-success": "Outline Success",
+            "outline-danger": "Outline Danger",
+            "outline-warning": "Outline Warning",
+            "outline-info": "Outline Info",
+            "outline-dark": "Outline Dark",
+            "outline-light": "Outline Light"
+        },
+        "buttonSize": {
+            "btn-sm": "Small",
+            "btn-md": "Medium",
+            "btn-lg": "Large",
+            "btn-sm btn-block": "Small Block",
+            "btn-md btn-block": "Medium Block",
+            "btn-lg btn-block": "Large Block"
         }
     }
 }

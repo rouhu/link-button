@@ -4,6 +4,7 @@
     },
     "tooltips": {
         "hideLabel": "If active consider disabling inline edit as well if you plan to use block button size.",
-        "placeholder": "Text to be shown as a hint when there is no value in the field."
+        "placeholder": "Text to be shown as a hint when there is no value in the field.",
+        "relationshipName": "The name of the relationship field to use when linking the newly created record to the parent record. If not specified, it will use the parent entity type in lowercase (e.g., 'account' for Account entity)."
     }
 }

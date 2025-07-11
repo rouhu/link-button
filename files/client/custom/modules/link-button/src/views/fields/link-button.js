@@ -1,18 +1,25 @@
-define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
+define('link-button:views/fields/link-button', ['views/fields/varchar'], (Dep) => {
     return class extends Dep {
 
         type = 'link-button'
         editTemplate = 'link-button:fields/edit'
         listTemplate = 'link-button:fields/list'
         detailTemplate = 'link-button:fields/detail'
+        searchTemplate = 'link-button:fields/edit'
 
         setup() {
             super.setup();
 
+            // Ensure our custom templates are used
+            this.editTemplate = 'link-button:fields/edit';
+            this.listTemplate = 'link-button:fields/list';
+            this.detailTemplate = 'link-button:fields/detail';
+            this.searchTemplate = 'link-button:fields/edit';
+
             this.events['click button[data-action="open-modal"]'] = () => {
                 this.actionOpenModal();
             };
-            
+
             this.events['click button[data-action="espo-modal"]'] = () => {
                 this.actionEspoModal();
             };
@@ -24,11 +31,27 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             this.events['click button[data-action="quick-create"]'] = () => {
                 this.actionQuickCreate();
             };
-            
+
             this.events['click button[data-action="run-workflow"]'] = () => {
                 this.actionCheckWorkFlow();
             };
 
+        }
+
+        validateUrl() {
+            // Get the current mode
+            const mode = this.model.getFieldParam(this.name, 'mode');
+            const value = this.model.get(this.name);
+
+            // For quickCreate, openEspoModal, and runEspoWorkflow modes, allow URLs starting with #
+            if (['quickCreate', 'openEspoModal', 'runEspoWorkflow'].includes(mode)) {
+                if (value && value.startsWith('#')) {
+                    return true; // Valid
+                }
+            }
+
+            // For other modes or URLs not starting with #, use parent validation
+            return super.validateUrl();
         }
 
         afterRender() {
@@ -39,29 +62,40 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             const isDetailMode = this.isDetailMode();
             const hideOriginalWorkflowAction = this.model.getFieldParam(this.name, 'hideOriginalWorkflowAction');
             const mode = this.model.getFieldParam(this.name, 'mode');
-        
+
             if (hideLabel === true) {
                 this.getLabelElement().hide();
             }
-        
+
             if (url && isDetailMode && hideOriginalWorkflowAction === true && mode === 'runEspoWorkflow') {
-                const workflowId = url.split('#')[1]?.split('/').pop();
-                superParent.hideHeaderActionItem(`runWorkflow_${workflowId}`);
+                let hashPart;
+                if (url.startsWith('#')) {
+                    hashPart = url.substring(1);
+                } else {
+                    hashPart = url.split('#')[1];
+                }
+                const workflowId = hashPart?.split('/').pop();
+                if (workflowId) {
+                    superParent.hideHeaderActionItem(`runWorkflow_${workflowId}`);
+                }
             }
 
         }
 
         data() {
+            const data = super.data();
             return {
-                ...super.data(),
+                ...data,
+                value: this.model.get(this.name),
+                url: this.model.get(this.name),
                 iconLeft: this.model.getFieldParam(this.name, 'iconLeft'),
                 iconRight: this.model.getFieldParam(this.name, 'iconRight'),
-                mode: this.model.getFieldParam(this.name, 'mode'),
+                mode: this.model.getFieldParam(this.name, 'mode') || 'openNewTab',
                 buttonLabel: this.model.getFieldParam(this.name, 'buttonLabel') || null,
                 placeholder: this.model.getFieldParam(this.name, 'placeholder') || null,
                 title: this.model.getFieldParam(this.name, 'title') || null,
-                buttonSize: this.model.getFieldParam(this.name, 'buttonSize'),
-                style: this.model.getFieldParam(this.name, 'style'),
+                buttonSize: this.model.getFieldParam(this.name, 'buttonSize') || 'btn-md',
+                style: this.model.getFieldParam(this.name, 'style') || 'default',
             };
         }
 
@@ -84,22 +118,30 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
         actionEspoModal() {
             let model = this.model;
             let url = this.model.get(this.name);
-            let hashPart = url.split('#')[1];
-            if (!hashPart) {
-                return Espo.Ui.error('Error: this is not a valid CRM URL');
+
+            // Handle URLs that start with # (e.g., #Contact/view/123)
+            let hashPart;
+            if (url.startsWith('#')) {
+                hashPart = url.substring(1);
+            } else {
+                hashPart = url.split('#')[1];
             }
-        
+
+            if (!hashPart) {
+                return Espo.Ui.error('Error: this is not a valid URL');
+            }
+
             let parts = hashPart.split('/');
             let entityType = parts[0];
             if (!entityType) {
                 return Espo.Ui.error('Error: no entity type found');
             }
-        
+
             let recordId = parts[parts.length - 1];
             if (!recordId) {
                 return Espo.Ui.error('Error: no record ID found');
             }
-        
+
             this.notify('Loading...');
             this.createView('quickView', 'link-button:views/modals/espo-modal', {
                 scope: entityType,
@@ -120,11 +162,19 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
         actionQuickCreate() {
             let model = this.model;
             let url = this.model.get(this.name);
-            let hashPart = url.split('#')[1];
-            if (!hashPart) {
-                return Espo.Ui.error('Error: this is not a valid CRM URL');
+
+            // Handle URLs that start with # (e.g., #Notes)
+            let hashPart;
+            if (url.startsWith('#')) {
+                hashPart = url.substring(1);
+            } else {
+                hashPart = url.split('#')[1];
             }
-        
+
+            if (!hashPart) {
+                return Espo.Ui.error('Error: this is not a valid URL');
+            }
+
             let parts = hashPart.split('/');
             let entityTypeModal = parts[0];
             if (!entityTypeModal) {
@@ -137,12 +187,25 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             } else {
                 viewName = this.getMetadata().get('clientDefs.' + entityTypeModal + '.modalViews.edit') || 'views/modals/edit';
             }
-            
+
             let attributes = {
                 parentId: model.id,
                 parentType: model.entityType,
                 parentName: model.get('name'),
             };
+
+            // Add relationship link if relationship name is specified
+            let relationshipName = this.model.getFieldParam(this.name, 'relationshipName');
+            if (relationshipName) {
+                // Use the specified relationship name
+                attributes[relationshipName + 'Id'] = model.id;
+                attributes[relationshipName + 'Name'] = model.get('name');
+            } else {
+                // Fallback to entity type based relationship (backward compatibility)
+                let entity = model.entityType;
+                attributes[entity.toLowerCase() + 'Id'] = model.id;
+                attributes[entity.toLowerCase() + 'Name'] = model.get('name');
+            }
 
             if (
                 entityTypeModal === 'Email' &&
@@ -186,19 +249,27 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             }
 
             Espo.Ui.confirm(message, {
-                    confirmText: this.translate('Yes', 'labels'),
-                    cancelText: this.translate('No', 'labels'),
-                    backdrop: true,
-                    isHtml: true,
-                })
+                confirmText: this.translate('Yes', 'labels'),
+                cancelText: this.translate('No', 'labels'),
+                backdrop: true,
+                isHtml: true,
+            })
                 .then(() => this.actionEspoWorkFlow());
         }
-        
+
 
         actionEspoWorkFlow() {
             let model = this.model;
             let url = model.get(this.name);
-            let hashPart = url.split('#')[1];
+
+            // Handle URLs that start with # (e.g., #Workflow/view/123)
+            let hashPart;
+            if (url.startsWith('#')) {
+                hashPart = url.substring(1);
+            } else {
+                hashPart = url.split('#')[1];
+            }
+
             if (!hashPart) {
                 return Espo.Ui.error('Error: this is not a valid workflow URL');
             }
@@ -211,13 +282,13 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             if (entityType !== 'Workflow') {
                 return Espo.Ui.error(('Error: not a workflow'));
             }
-        
+
             Espo.Ajax.getRequest('LinkButton/WorkflowCheck/' + workflowId)
                 .then(response => {
                     if (response.isManual === false) {
                         return Espo.Ui.error(('Error: not a manual or active workflow'));
                     }
-        
+
                     Espo.Ajax.postRequest('WorkflowManual/action/run', {
                         targetId: model.id,
                         id: workflowId,
@@ -232,7 +303,7 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
                     Espo.Ui.error(('Error checking workflow type'));
                 });
         }
-        
+
         actionOpenPopup() {
             const popupHeight = this.model.getFieldParam(this.name, 'popupHeight') || 800;
             const popupWidth = this.model.getFieldParam(this.name, 'popupWidth') || 600;
