@@ -52,8 +52,10 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
         }
 
         data() {
+            const data = super.data();
             return {
-                ...super.data(),
+                ...data,
+                url: this.model.get(this.name),
                 iconLeft: this.model.getFieldParam(this.name, 'iconLeft'),
                 iconRight: this.model.getFieldParam(this.name, 'iconRight'),
                 mode: this.model.getFieldParam(this.name, 'mode'),
