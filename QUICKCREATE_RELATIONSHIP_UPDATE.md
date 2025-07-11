@@ -3,6 +3,11 @@
 ## Overview
 This update adds the ability to specify a custom relationship name when using the Quick Create mode in the Link Button extension. Previously, the extension assumed the relationship name always followed the pattern `entityType.toLowerCase() + 'Id'`, which was not always correct.
 
+## Bug Fixes
+- Fixed button display issues where buttons were showing as text fields
+- Ensured proper template loading for all view modes (detail, list, edit)
+- Added default values for style and buttonSize to prevent empty button rendering
+
 ## Changes Made
 
 ### 1. Added New Field Parameter

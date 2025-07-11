@@ -5,9 +5,16 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
         editTemplate = 'link-button:fields/edit'
         listTemplate = 'link-button:fields/list'
         detailTemplate = 'link-button:fields/detail'
+        searchTemplate = 'link-button:fields/edit'
 
         setup() {
             super.setup();
+
+            // Ensure our custom templates are used
+            this.editTemplate = 'link-button:fields/edit';
+            this.listTemplate = 'link-button:fields/list';
+            this.detailTemplate = 'link-button:fields/detail';
+            this.searchTemplate = 'link-button:fields/edit';
 
             this.events['click button[data-action="open-modal"]'] = () => {
                 this.actionOpenModal();
@@ -55,15 +62,16 @@ define('link-button:views/fields/link-button', ['views/fields/url'], (Dep) => {
             const data = super.data();
             return {
                 ...data,
+                value: this.model.get(this.name),
                 url: this.model.get(this.name),
                 iconLeft: this.model.getFieldParam(this.name, 'iconLeft'),
                 iconRight: this.model.getFieldParam(this.name, 'iconRight'),
-                mode: this.model.getFieldParam(this.name, 'mode'),
+                mode: this.model.getFieldParam(this.name, 'mode') || 'openNewTab',
                 buttonLabel: this.model.getFieldParam(this.name, 'buttonLabel') || null,
                 placeholder: this.model.getFieldParam(this.name, 'placeholder') || null,
                 title: this.model.getFieldParam(this.name, 'title') || null,
-                buttonSize: this.model.getFieldParam(this.name, 'buttonSize'),
-                style: this.model.getFieldParam(this.name, 'style'),
+                buttonSize: this.model.getFieldParam(this.name, 'buttonSize') || 'btn-md',
+                style: this.model.getFieldParam(this.name, 'style') || 'default',
             };
         }
 
