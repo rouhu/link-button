@@ -331,10 +331,18 @@ define('link-button:views/fields/link-button', ['views/fields/varchar'], (Dep) =
                 // Get the parent record view
                 let parentView = this.getParentView();
                 while (parentView) {
-                    // Look for the record detail view which has setDetailMode method
-                    if (parentView.setDetailMode && typeof parentView.setDetailMode === 'function') {
-                        // Switch to detail mode
+                    // Look for the record detail view which has cancelEdit method
+                    if (parentView.cancelEdit && typeof parentView.cancelEdit === 'function') {
+                        // Use cancelEdit which properly switches to detail mode and updates buttons
+                        parentView.cancelEdit();
+                        break;
+                    } else if (parentView.setDetailMode && typeof parentView.setDetailMode === 'function') {
+                        // Fallback to setDetailMode if cancelEdit is not available
                         parentView.setDetailMode();
+                        // Try to update button bar if method exists
+                        if (parentView.updateButtonsPanel && typeof parentView.updateButtonsPanel === 'function') {
+                            parentView.updateButtonsPanel();
+                        }
                         break;
                     }
                     parentView = parentView.getParentView ? parentView.getParentView() : null;
