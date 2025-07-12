@@ -327,6 +327,19 @@ define('link-button:views/fields/link-button', ['views/fields/varchar'], (Dep) =
             this.notify('Saving...');
             this.model.save().then(() => {
                 this.notify('Saved', 'success');
+
+                // Get the parent record view
+                let parentView = this.getParentView();
+                while (parentView) {
+                    // Look for the record detail view which has setDetailMode method
+                    if (parentView.setDetailMode && typeof parentView.setDetailMode === 'function') {
+                        // Switch to detail mode
+                        parentView.setDetailMode();
+                        break;
+                    }
+                    parentView = parentView.getParentView ? parentView.getParentView() : null;
+                }
+
                 // Trigger any workflows that might be listening for this field value
                 this.model.trigger('sync');
             }).catch(() => {

@@ -40,6 +40,7 @@ To use with workflows:
 ## Technical Details
 - The button field value is set to "1" when pressed
 - The record is automatically saved after button click
+- After saving, the view automatically returns to detail mode (just like the normal Save button)
 - No URL validation is required for this mode
 - The button is always visible in detail view (doesn't check for field value)
 
