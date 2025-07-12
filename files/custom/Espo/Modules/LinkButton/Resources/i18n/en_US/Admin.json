@@ -27,7 +27,8 @@
             "openModal": "Open Modal",
             "openEspoModal": "Open Espo Modal",
             "quickCreate": "Quick Create",
-            "runEspoWorkflow": "Run Espo Workflow"
+            "runEspoWorkflow": "Run Espo Workflow",
+            "buttonPressed": "Button Pressed"
         },
         "style": {
             "default": "Default",

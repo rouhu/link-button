@@ -34,7 +34,8 @@
                 "openPopup",
                 "openModal",
                 "openEspoModal",
-                "quickCreate"
+                "quickCreate",
+                "buttonPressed"
             ],
             "view": "link-button:views/admin/field-manager/fields/mode"
         },

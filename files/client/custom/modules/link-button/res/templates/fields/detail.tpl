@@ -151,3 +151,17 @@
         {{/if}}
     {{/if}}
 {{/ifEqual}}
+
+{{#ifEqual mode 'buttonPressed'}}
+    <button class="btn btn-{{style}} {{buttonSize}}" title="{{title}}" data-action="button-pressed">
+        {{#if iconLeft}}
+        <span class="{{iconLeft}}"></span>
+        {{/if}}
+        {{#if buttonLabel}}
+        <span> {{buttonLabel}} </span>
+        {{/if}}
+        {{#if iconRight}}
+        <span class="{{iconRight}}"></span>
+        {{/if}}
+    </button>
+{{/ifEqual}}

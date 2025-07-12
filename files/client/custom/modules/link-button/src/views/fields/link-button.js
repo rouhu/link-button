@@ -36,12 +36,21 @@ define('link-button:views/fields/link-button', ['views/fields/varchar'], (Dep) =
                 this.actionCheckWorkFlow();
             };
 
+            this.events['click button[data-action="button-pressed"]'] = () => {
+                this.actionButtonPressed();
+            };
+
         }
 
         validateUrl() {
             // Get the current mode
             const mode = this.model.getFieldParam(this.name, 'mode');
             const value = this.model.get(this.name);
+
+            // For buttonPressed mode, no URL validation is needed
+            if (mode === 'buttonPressed') {
+                return true; // Always valid
+            }
 
             // For quickCreate, openEspoModal, and runEspoWorkflow modes, allow URLs starting with #
             if (['quickCreate', 'openEspoModal', 'runEspoWorkflow'].includes(mode)) {
@@ -308,6 +317,21 @@ define('link-button:views/fields/link-button', ['views/fields/varchar'], (Dep) =
             const popupHeight = this.model.getFieldParam(this.name, 'popupHeight') || 800;
             const popupWidth = this.model.getFieldParam(this.name, 'popupWidth') || 600;
             window.open(this.model.get(this.name), '_blank', `scrollbars=yes,height=${popupHeight},width=${popupWidth}`);
+        }
+
+        actionButtonPressed() {
+            // Set the field value to "1"
+            this.model.set(this.name, '1');
+
+            // Save the model
+            this.notify('Saving...');
+            this.model.save().then(() => {
+                this.notify('Saved', 'success');
+                // Trigger any workflows that might be listening for this field value
+                this.model.trigger('sync');
+            }).catch(() => {
+                this.notify('Error occurred', 'error');
+            });
         }
     };
 });

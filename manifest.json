@@ -8,7 +8,7 @@
     "acceptableVersions": [
         ">=7.0"
     ],
-    "version": "2.0.1",
+    "version": "2.0.2",
     "skipBackup": true,
     "releaseDate": "2025-02-15"
 }
