@@ -323,36 +323,27 @@ define('link-button:views/fields/link-button', ['views/fields/varchar'], (Dep) =
             // Set the field value to "1"
             this.model.set(this.name, '1');
 
-            // Save the model
-            this.notify('Saving...');
-            this.model.save().then(() => {
-                this.notify('Saved', 'success');
-
-                // Get the parent record view
-                let parentView = this.getParentView();
-                while (parentView) {
-                    // Look for the record detail view which has cancelEdit method
-                    if (parentView.cancelEdit && typeof parentView.cancelEdit === 'function') {
-                        // Use cancelEdit which properly switches to detail mode and updates buttons
-                        parentView.cancelEdit();
-                        break;
-                    } else if (parentView.setDetailMode && typeof parentView.setDetailMode === 'function') {
-                        // Fallback to setDetailMode if cancelEdit is not available
-                        parentView.setDetailMode();
-                        // Try to update button bar if method exists
-                        if (parentView.updateButtonsPanel && typeof parentView.updateButtonsPanel === 'function') {
-                            parentView.updateButtonsPanel();
-                        }
-                        break;
-                    }
-                    parentView = parentView.getParentView ? parentView.getParentView() : null;
+            // Find the parent view that has the save method
+            let parentView = this.getParentView();
+            while (parentView) {
+                // Look for the record detail view which has the save method
+                if (parentView.save && typeof parentView.save === 'function') {
+                    // Use the parent view's save method which handles everything properly
+                    parentView.save();
+                    break;
                 }
+                parentView = parentView.getParentView ? parentView.getParentView() : null;
+            }
 
-                // Trigger any workflows that might be listening for this field value
-                this.model.trigger('sync');
-            }).catch(() => {
-                this.notify('Error occurred', 'error');
-            });
+            // If no parent view with save method found, fallback to model save
+            //  if (!parentView) {
+            //      this.notify('Saving...');
+            //      this.model.save().then(() => {
+            //          this.notify('Saved', 'success');
+            //      }).catch(() => {
+            //          this.notify('Error occurred', 'error');
+            //      });
+            //  }
         }
     };
 });
