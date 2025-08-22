@@ -328,6 +328,12 @@ define('link-button:views/fields/link-button', ['views/fields/varchar'], (Dep) =
             while (parentView) {
                 // Look for the record detail view which has the save method
                 if (parentView.save && typeof parentView.save === 'function') {
+                    // Listen for the after:save event to handle mode transition
+                    this.listenToOnce(parentView, 'after:save', () => {
+                        // Switch to detail view mode after successful save
+                        this.switchToDetailView(parentView);
+                    });
+
                     // Use the parent view's save method which handles everything properly
                     parentView.save();
                     break;
@@ -344,6 +350,41 @@ define('link-button:views/fields/link-button', ['views/fields/varchar'], (Dep) =
             //          this.notify('Error occurred', 'error');
             //      });
             //  }
+        }
+
+        switchToDetailView(parentView) {
+            // Method 1: Try to switch the parent view to detail mode if it supports it
+            if (parentView.setDetailMode && typeof parentView.setDetailMode === 'function') {
+                parentView.setDetailMode();
+                return;
+            }
+
+            // Method 2: Try to call setReadOnly on the parent view
+            if (parentView.setReadOnly && typeof parentView.setReadOnly === 'function') {
+                parentView.setReadOnly();
+                return;
+            }
+
+            // Method 3: Navigate to detail view using router
+            if (this.model.id) {
+                const url = '#' + this.model.entityType + '/view/' + this.model.id;
+                this.getRouter().navigate(url, { trigger: true });
+                return;
+            }
+
+            // Method 4: Try to find and trigger detail mode on the record view
+            let recordView = parentView;
+            while (recordView) {
+                if (recordView.mode && recordView.setDetailMode) {
+                    recordView.setDetailMode();
+                    return;
+                }
+                if (recordView.mode && recordView.setMode && typeof recordView.setMode === 'function') {
+                    recordView.setMode('detail');
+                    return;
+                }
+                recordView = recordView.getParentView ? recordView.getParentView() : null;
+            }
         }
     };
 });
